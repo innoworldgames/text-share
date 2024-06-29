@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { database } from "@/firebase";
 import { ref, set } from "firebase/database";
 
 export default function Home() {
   const [text, setText] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await set(ref(database, "data/text"), text);
