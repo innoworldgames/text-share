@@ -23,7 +23,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-8">Text Share</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md">
         <textarea
-          className="w-full p-2 border border-gray-300 rounded mb-4"
+          className="w-full p-2 border border-gray-300 rounded mb-4 text-black"
           rows={4}
           value={text}
           onChange={(e) => setText(e.target.value)}
