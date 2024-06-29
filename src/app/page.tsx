@@ -7,22 +7,40 @@ export default function Home() {
   const [text, setText] = useState("");
   const [lastMessage, setLastMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [deviceType, setDeviceType] = useState("");
 
   useEffect(() => {
     const messageRef = ref(database, "data/text");
     onValue(messageRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        setLastMessage(data);
+        setLastMessage(data.message);
+        setDeviceType(data.deviceType);
       }
       setIsLoading(false);
     });
   }, []);
 
+  const detectDeviceType = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (
+      /mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+        userAgent
+      )
+    ) {
+      return /ipad/i.test(userAgent) ? "tablet" : "phone";
+    }
+    return "desktop";
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await set(ref(database, "data/text"), text);
+      const detectedDeviceType = detectDeviceType();
+      await set(ref(database, "data/text"), {
+        message: text,
+        deviceType: detectedDeviceType,
+      });
       setText("");
     } catch (error) {
       console.error("Error sending text:", error);
@@ -60,9 +78,12 @@ export default function Home() {
               <div className="h-4 bg-gray-200 rounded w-1/2"></div>
             </div>
           ) : lastMessage ? (
-            <p className="bg-gray-50 p-3 rounded-md text-gray-600">
-              {lastMessage}
-            </p>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <p className="text-gray-600">{lastMessage}</p>
+              <p className="text-sm text-gray-400 mt-2">
+                Sent from: {deviceType}
+              </p>
+            </div>
           ) : (
             <p className="bg-gray-50 p-3 rounded-md text-gray-400">
               No message shared yet.
